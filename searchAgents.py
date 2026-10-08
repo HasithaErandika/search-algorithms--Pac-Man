@@ -21,9 +21,9 @@ class CornersProblem:
         self._expanded = 0
 
     def getStartState(self):
-        visited = ()
+        visited = frozenset()
         if self.startingPosition in self.corners:
-            visited = (self.startingPosition,)
+            visited = frozenset((self.startingPosition,))
         return self.startingPosition, visited
 
     def isGoalState(self, state):
@@ -43,8 +43,8 @@ class CornersProblem:
             if self.walls[next_x][next_y]:
                 continue
             next_visited = visited
-            if next_position in self.corners and next_position not in visited:
-                next_visited = visited + (next_position,)
+            if next_position in self.corners:
+                next_visited = visited | frozenset((next_position,))
             successors.append(((next_position, next_visited), action, 1))
         self._expanded += 1
         return successors
