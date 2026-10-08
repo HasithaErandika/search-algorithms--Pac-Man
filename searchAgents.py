@@ -467,7 +467,45 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foods = foodGrid.asList()
+    if not foods:
+        return 0
+
+   
+    distanceMaps = problem.heuristicInfo.setdefault('foodDistanceMaps', {})
+
+    def distancesFrom(source):
+        if source not in distanceMaps:
+            from collections import deque
+            distances = {source: 0}
+            queue = deque([source])
+            while queue:
+                x, y = queue.popleft()
+                nextDistance = distances[(x, y)] + 1
+                for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    neighbor = (x + dx, y + dy)
+                    if (not problem.walls[neighbor[0]][neighbor[1]]
+                            and neighbor not in distances):
+                        distances[neighbor] = nextDistance
+                        queue.append(neighbor)
+            distanceMaps[source] = distances
+        return distanceMaps[source]
+
+
+    fromPosition = distancesFrom(position)
+    nearest = min(fromPosition[food] for food in foods)
+    bestEdge = {food: float('inf') for food in foods}
+    bestEdge[foods[0]] = 0
+    total = nearest
+    while bestEdge:
+        nextPoint = min(bestEdge, key=bestEdge.get)
+        edgeCost = bestEdge.pop(nextPoint)
+        total += edgeCost
+        fromNext = distancesFrom(nextPoint)
+        for point in bestEdge:
+            if fromNext[point] < bestEdge[point]:
+                bestEdge[point] = fromNext[point]
+    return total
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
