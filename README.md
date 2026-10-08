@@ -25,7 +25,7 @@ conda activate cs188
 python -m pip install -r requirements.txt
 ```
 
-After extracting the Pac-Man starter files into this repository, verify the game and run the relevant autograder question:
+The original Berkeley Pac-Man distribution is kept at the repository root, matching the assignment layout. Run it from the repository root:
 
 ```bash
 python pacman.py

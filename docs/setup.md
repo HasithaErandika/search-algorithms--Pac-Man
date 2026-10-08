@@ -2,7 +2,7 @@
 
 ## Required starter files
 
-After downloading and extracting `search.zip`, place its contents in this repository. Confirm that these files exist:
+After downloading and extracting `search.zip`, keep the original distribution together in the repository root. Confirm that these files exist there:
 
 `search.py`, `searchAgents.py`, `pacman.py`, `util.py`, `game.py`, and `autograder.py`.
 
