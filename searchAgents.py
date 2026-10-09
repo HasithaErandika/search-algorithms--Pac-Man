@@ -357,23 +357,20 @@ class CornersProblem(search.SearchProblem):
 
 
 def cornersHeuristic(state: Any, problem: CornersProblem):
-    """
-    A heuristic for the CornersProblem that you defined.
 
-      state:   The current search state
-               (a data structure you chose in your search problem)
-
-      problem: The CornersProblem instance for this layout.
-
-    This function should always return a number that is a lower bound on the
-    shortest path from the state to a goal of the problem; i.e.  it should be
-    admissible (as well as consistent).
-    """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    position, visited = state
+    remaining = [corner for corner in corners if corner not in visited]
+    if not remaining:
+        return 0
+
+    # Any complete route must reach every remaining corner. The distance to
+    # the farthest one is therefore a lower bound; Manhattan distance changes
+    # by at most one per legal grid move, so the bound is consistent.
+    return max(abs(position[0] - x) + abs(position[1] - y)
+               for x, y in remaining)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -471,9 +468,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if not foods:
         return 0
 
-    # Cache a complete maze-distance map for each point used by the heuristic.
-    # Manhattan distances would also be safe, but maze distances give a much
-    # tighter metric while preserving the consistency of the MST bound.
+   
     distanceMaps = problem.heuristicInfo.setdefault('foodDistanceMaps', {})
 
     def distancesFrom(source):
@@ -493,8 +488,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
             distanceMaps[source] = distances
         return distanceMaps[source]
 
-    # The route must first reach some food, then connect all remaining foods.
-    # The nearest-food distance plus their MST is a consistent lower bound.
+
     fromPosition = distancesFrom(position)
     nearest = min(fromPosition[food] for food in foods)
     bestEdge = {food: float('inf') for food in foods}
